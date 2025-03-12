@@ -11,20 +11,15 @@ function Post() {
   const { slug } = useParams();
   useEffect(() => {
     // Hàm fetch dữ liệu theo trang
-    const fetchPosts = (page = 1) => {
-
-      axios
-        .get(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api/'}/react-posts?slug=${slug}&page=${page}`)
-        .then((response) => {
-          setData(response.data);
-          console.log(response.data);
-          setPagination(response.data.pagination || {}); // Kiểm tra pagination
-
-        })
-        .catch((error) => {
-          setError(error);
-
-        });
+    const fetchPosts = async (page = 1) => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api/'}/react-posts?slug=${slug}&page=${page}`);
+        setData(response.data);
+        console.log(response.data);
+        setPagination(response.data.pagination || {}); // Kiểm tra pagination
+      } catch (error) {
+        setError(error);
+      }
     };
 
 

@@ -1,12 +1,14 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import Slicks  from "../utils/Slicks";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const Home = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
   useEffect(() => {
     // Gửi yêu cầu đến API Laravel để lấy chi tiết bài viết theo slug
     axios.get(`${process.env.REACT_APP_API_URL}/home-react`)
@@ -14,16 +16,35 @@ const Home = () => {
         setData(response.data);
         // console.log(response.data?.marquee);
         setLoading(false);
-        Slicks();
       })
       .catch(error => {
         setError(error);
         setLoading(false);
       });
   }, []);
+
   if (error) {
     return <div>Có lỗi khi gọi API: {error.message}</div>;
   }
+  var settings = {
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+  };
+  var settings2 = {
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+  };
+  
   if (loading) {
     return <div className='mx-auto w-[1200px] '>
       <div className="pixel-loader">
@@ -40,12 +61,13 @@ const Home = () => {
       </div>
     </div>;
   }
+  
 
   return (
     <div className='main px-2'>
       <div className="2xl:w-[1440px] xl:w-[1200px] lg:w-[900px] md:w-[768px] sm:w-[640px] w-full mx-auto mb-2 mt-[1px]">
-        <div className="flex border-y-[1px] h-8 w-full">
-          <div className="w-fit px-3 bg-red-800 fill-white py-1">
+        <div className="flex border-y-[1px] h-8 w-full rounded-l-md rounded-r-md">
+          <div className="w-fit px-3 bg-red-800 fill-white py-1 rounded-l-md ">
             <svg className="h-3 w-3 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
               <path d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z" />
             </svg>
@@ -59,7 +81,7 @@ const Home = () => {
               ))}
             </ul>
           </div>
-          <div className="w-8 bg-red-800"> 
+          <div className="w-8 bg-red-800 rounded-r-md"> 
           </div>
         </div>
       </div>
@@ -306,30 +328,19 @@ const Home = () => {
                         </div>
                     </Link>
                     
-                      <div className="list-video-top mb-1">
-                        {data?.imgs.map((img, index) => (
+                    <div>
+                        <Slider {...settings2} className="gap-8 mb-1 my-auto">
+                        {data.imgs.map((img, index) => (
                           <img 
                             key={index} 
-                            style={{ height: '250px' }} 
-                            src={`http://127.0.0.1:8000/storage/${img.anh}`} 
-                            alt={img.anh || "Hình ảnh"}
+                            className="rounded-lg mx-2" 
+                            style={{ height: '250px', objectFit: 'cover' }} 
+                            src={`http://127.0.0.1:8000/storage${img.anh}`} 
+                            alt={img.anh}
                           />
-                        ))}      
-                      </div> 
-                    
-
-                      <ul class="grid grid-cols-12 list-video-bottom bg-[#dedede]  rounded-sm relative ">
-                    
-                        {data?.imgs.map((img, index) => (
-                            <img 
-                              key={index} 
-                              style={{ height: '67px' }} 
-                              className="px-2" 
-                              src={`http://127.0.0.1:8000/storage/${img.anh}`} 
-                              alt={img.anh || "Hình ảnh"}
-                            />
-                          ))}
-                      </ul>
+                        ))}
+                      </Slider>
+                    </div>
                 </div>
             ):(null)}    
           </div>
@@ -444,7 +455,7 @@ const Home = () => {
                   <div className="title px-3 py-[1px] bg-[#dedede] border-[#b21c37] border-l-[2px] mb-2">
                     <p className="text-[#b21c37] font-bold">Thư viện ảnh</p>
                   </div>
-                  <div className="list-video-top mb-1">
+                  <Slider {...settings} className="list-video-top mb-1">
                     {data.imgs.map((img, index) => (
                       <img 
                         key={index} 
@@ -454,7 +465,7 @@ const Home = () => {
                         alt={img.anh}
                       />
                     ))}
-                  </div>
+                  </Slider>
                 </>
               ) : null}
             </div>
@@ -512,10 +523,9 @@ const Home = () => {
                 <div className="title px-3 py-[1px] bg-[#ccc] border-[#b21c37] border-l-[2px] mb-2">
                     <p className=" text-xl text-[#b21c37] font-bold">Liên kết Website</p>
                 </div>
-                <ul className="content border-[#b21c37] border-[1px] py-2 divide-y divide-gray-100 overflow-y-scroll" role="list"  style={{height: '16.5rem'}}>
-                    
-                    <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" />
+                <ul className="content border-[#b21c37] border-[1px] py-2 divide-y divide-gray-100 overflow-y-scroll"  style={{height: '16.5rem'}}>
+                  <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"  alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="http://www.btxvnt.org.vn">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">Bào tàng Xô Viết Nghệ Tĩnh</p>
@@ -524,7 +534,7 @@ const Home = () => {
                     </li>
                     
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="https://www.facebook.com/thuvientinhnghean">
                                 <p className="text-sm font-semibold leading-6 text-gray-900 ">Thư
@@ -533,7 +543,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="https://www.facebook.com/TTNTTTNA/">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -542,7 +552,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="http://vanhoanghean.com.vn">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -551,7 +561,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="https://dancaxunghe.vn/">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -560,7 +570,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="https://baotanghochiminh.vn/">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -569,7 +579,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to="http://www.khuditichkimlien.gov.vn">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -578,7 +588,7 @@ const Home = () => {
                         </div>
                     </li>
                     <li className=" pl-2 hover:bg-red-500 flex gap-x-2 py-2 items-center">
-                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png"/>
+                        <img className=" h-8 w-8 flex-none rounded-full bg-gray-50" src="http://127.0.0.1:8000/assets/images/icon-lk.png" alt="icon lienket web"/>
                         <div className="min-w-0">
                             <Link to=" http://banquanlyditichnghean.gov.vn">
                                 <p className="text-sm font-semibold leading-6 text-gray-900  ">
@@ -600,6 +610,13 @@ const Home = () => {
         </div>
       </div>
     </div>
+    <div className="cursor-pointer hidden flex justify-center items-center back-to-top fixed text-lg rounded-full z-10 bottom-5 end-5 h-9 w-9 text-center bg-[#b21c37] text-white leading-9">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                d="m17.71 11.29l-5-5a1 1 0 0 0-.33-.21a1 1 0 0 0-.76 0a1 1 0 0 0-.33.21l-5 5a1 1 0 0 0 1.42 1.42L11 9.41V17a1 1 0 0 0 2 0V9.41l3.29 3.3a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.42" />
+        </svg>
+    </div>
+    <div id="overlay" className="fixed top-0 left-0 bottom-0 right-0 bg-gray-500 opacity-25 hidden"></div>
     </div>
   );
 };
